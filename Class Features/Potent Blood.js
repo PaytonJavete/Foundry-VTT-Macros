@@ -1,12 +1,11 @@
-@@ -0,0 +1,119 @@
-actor = canvas.tokens.controlled[0].actor;
-maxSpellLevel = Math.floor((actor.classes.cleric.system.levels + 1) / 2) - 1;
-hitDice = actor.system.attributes.hd;
+const actor = canvas.tokens.controlled[0].actor;
+const maxSpellLevel = Math.floor((actor.classes.cleric.system.levels + 1) / 2) - 1;
+const hitDice = actor.system.attributes.hd;
 if (hitDice == 0){
-	return ui.notifications.error("No hit dice to spend");
+	return ui.notifications.warn("Potent Blood: No hit dice to spend");
 }
 
-let spellList = actor.items.filter(item => item.type == "spell" && item.system.level <= maxSpellLevel && item.system.preparation.prepared && item.system.description.value.includes("At Higher Levels"));
+let spellList = actor.items.filter(item => item.type == "spell" && item.system.level <= maxSpellLevel && item.system.preparation.prepared && item.system.description.value.includes("At Higher Levels")).sort((a, b) => a.name.localeCompare(b.name));
 
 let optionsText = "";
 for (let spell of spellList) {
@@ -78,7 +77,7 @@ if (!confirmed) return;
 const item = actor.items.getName(chosenSpell.name);
 const upcastLevel = item.system.level + hitDiceSpent;
 if (upcastLevel > (maxSpellLevel+1)){
-	return ui.notifications.error("Spent too many hit dice, new spell level is greater than you are able to cast.");
+	return ui.notifications.error("Potent Blood: Spent too many hit dice, new spell level is greater than you are able to cast.");
 }
 
 const hdSpentUpdate = actor.classes.cleric.system.hitDiceUsed + hitDiceSpent;
