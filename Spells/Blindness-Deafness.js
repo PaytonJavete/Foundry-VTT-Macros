@@ -1,12 +1,3 @@
-if (!game.modules.get("advanced-macros")?.active) {
-  ui.notifications.error("Please enable the Advanced Macros module");
-  return;
-}
-if (!game.modules.get("dfreds-convenient-effects")?.active) {
-  ui.notifications.error("Please enable the CE module");
-  return;
-}
-
 const lastArg = args[args.length - 1];
 const tokenOrActor = await fromUuid(lastArg.actorUuid);
 const targetActor = tokenOrActor.actor ? tokenOrActor.actor : tokenOrActor;
@@ -14,9 +5,9 @@ const targetActor = tokenOrActor.actor ? tokenOrActor.actor : tokenOrActor;
 function effectAppliedAndActive(conditionName) {
   return targetActor.data.effects.some(
     (activeEffect) =>
-      activeEffect?.data?.flags?.isConvenient &&
-      activeEffect?.data?.label == conditionName &&
-      !activeEffect?.data?.disabled
+      activeEffect?.flags["dfreds-convenient-effects"]?.isConvenient &&
+      activeEffect?.label == conditionName &&
+      !activeEffect?.disabled
   );
 }
 
