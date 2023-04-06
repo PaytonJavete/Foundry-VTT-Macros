@@ -1,5 +1,5 @@
-let concentrating = actor.effects.find(effect => effect.sourceName == "Sunbeam" && effect.label == "Concentrating");
-if(concentrating == undefined){
+let concentrating = actor.effects.some(effect => effect.sourceName == "Sunbeam" && effect.label == "Concentrating");
+if(!concentrating){
     game.dnd5e.macros.rollItem("Sunbeam");
 } else {
     const item = actor.items.getName("Sunbeam");

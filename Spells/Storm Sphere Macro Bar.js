@@ -1,5 +1,5 @@
-let concentrating = actor.effects.find(effect => effect.sourceName == "Storm Sphere" && effect.label == "Concentrating");
-if(concentrating == undefined){
+let concentrating = actor.effects.some(effect => effect.sourceName == "Storm Sphere" && effect.label == "Concentrating");
+if(!concentrating){
     game.dnd5e.macros.rollItem("Storm Sphere")    
 } else {
 	if (game.user.targets.size != 1){
@@ -20,8 +20,8 @@ if(concentrating == undefined){
     }
 
     let targetActor = target.actor;
-    let inStorm = targetActor.effects.find(effect => effect.sourceName == "Storm Sphere" && effect.label == "Storm Sphere");
-    if (inStorm != undefined){
+    let inStorm = targetActor.effects.some(effect => effect.sourceName == "Storm Sphere" && effect.label == "Storm Sphere");
+    if (inStorm){
     	uuid = targetActor.uuid;
  		await game.dfreds.effectInterface.addEffect({ effectName: 'Storm Sphere Advantage Helper', uuid });   	
     }
