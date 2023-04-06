@@ -20,7 +20,7 @@ if (effect){
 }
 newDrain = currentDrain - damage;
 
-const effectData = await game.dfreds.effectInterface.findEffectByName(efName).convertToObject();
+const effectData = await game.dfreds.effectInterface.findEffectByName(efName);
 effectData.changes[0].value = newDrain;
 
 await game.dfreds.effectInterface.addEffectWith({ effectData, uuid });
