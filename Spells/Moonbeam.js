@@ -39,6 +39,7 @@ async function attachSequencerFileToTemplate(templateUuid, originUuid) {
           height: canvas.grid.size * ((template.data.distance*2.5) / canvas.dimensions.distance),
         })
         .origin(originUuid)
+        .aboveLighting()
         .atLocation({x: template.data.x, y: template.data.y})
       .waitUntilFinished(-1000)
       .effect()
@@ -49,6 +50,7 @@ async function attachSequencerFileToTemplate(templateUuid, originUuid) {
         })
         .persist(true)
         .origin(originUuid)
+        .aboveLighting()
         .atLocation({x: template.data.x, y: template.data.y})
         .attachTo(template)
       .play();
