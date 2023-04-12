@@ -1,12 +1,12 @@
-lastArg = args[args.length-1];
-console.log(lastArg);
+const lastArg = args[args.length-1];
 
-lastArg.targetUuids.forEach(async (uuid) => {
-	token = await fromUuid(uuid);
-	creatureType = token.actor.system.details.type.value;
-	if (creatureType == "plant"){
-		await game.dfreds.effectInterface.addEffect({ effectName: 'Blight Plant Disadvantage', uuid });
-		uuid = lastArg.actorUuid;
-		await game.dfreds.effectInterface.addEffect({ effectName: 'Blight Max Damage', uuid });
-	}	
-});
+const targetId = lastArg.targetUuids[0];
+const token = await fromUuid(targetId);
+const creatureType = token.actor.system.details.type.value;
+const casterId = lastArg.actorUuid;
+if (creatureType == "plant"){
+	await game.dfreds.effectInterface.addEffect({ effectName: 'Blight Plant Disadvantage', uuid: targetId });	
+	await game.dfreds.effectInterface.addEffect({ effectName: 'Blight Max Damage', uuid: casterId });
+}
+
+return;
