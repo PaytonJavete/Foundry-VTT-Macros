@@ -3,7 +3,7 @@ const tokenOrActor = await fromUuid(lastArg.actorUuid);
 const targetActor = tokenOrActor.actor ? tokenOrActor.actor : tokenOrActor;
 
 function effectAppliedAndActive(conditionName) {
-  return targetActor.data.effects.some(
+  return targetActor.effects.some(
     (activeEffect) =>
       activeEffect?.flags["dfreds-convenient-effects"]?.isConvenient &&
       activeEffect?.label == conditionName &&
