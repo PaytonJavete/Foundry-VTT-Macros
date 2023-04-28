@@ -14,8 +14,8 @@ if (args[0].tag === "OnUse" && args[0].macroPass === "preActiveEffects") {
     .effect()
       .file("jb2a.fog_cloud.2.green")
       .size({
-        width: canvas.grid.size * ((template.distance*2) / canvas.dimensions.distance),
-        height: canvas.grid.size * ((template.distance*2) / canvas.dimensions.distance),
+        width: canvas.grid.size * ((template.distance*2.5) / canvas.dimensions.distance),
+        height: canvas.grid.size * ((template.distance*2.5) / canvas.dimensions.distance),
       })
       .persist(true)
       .aboveLighting()
