@@ -23,6 +23,16 @@ cast = await dialog;
 if(cast){
     game.dnd5e.macros.rollItem("Holy Weapon");
 } else {
+    const actor = canvas.tokens.controlled[0].actor
+    const uuid = actor.uuid;
+    let hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Concentrating', uuid);
+
+    if (hasEffectApplied) {
+        game.dfreds.effectInterface.removeEffect({ effectName: 'Concentrating', uuid });
+    } else {
+        return ui.notifications.error("Not Concentrating on Holy Weapon!");
+    }
+
     let weaponHolder = null;
     if (game.user.targets.size == 1){
         [token] = game.user.targets;
@@ -32,23 +42,14 @@ if(cast){
         return ui.notifications.error("Holy Weapon Burst should target only one creature");
     }
 
-    const uuid = canvas.tokens.controlled[0].actor.uuid;
-    let hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Concentrating', uuid);
-
-    if (hasEffectApplied) {
-        game.dfreds.effectInterface.removeEffect({ effectName: 'Concentrating', uuid });
-    } else {
-        return ui.notifications.error("Not Concentrating on Holy Weapon!");
-    }
-
     const item = actor.items.getName("Holy Weapon");
     const workflowItemData = duplicate(item);
     workflowItemData.system.components.concentration = false;
     workflowItemData.system.preparation.mode = "atwill";
     workflowItemData.system.uses = {max: null, per: "", value: null};
     workflowItemData.system.target = { value: 30, units: "ft", type: "enemy" };
-    workflowItemData.system.save = { ability: "con", dc: 17, scaling: "spell"};
-    workflowItemData.system.range = { value: null, units: "spec", long: "null" };
+    workflowItemData.system.save = { ability: "con", dc: actor.system.attributes.spelldc, scaling: "spell"};
+    workflowItemData.system.range = { value: null, units: "spec", long: null };
     workflowItemData.system.damage.parts = [["4d8[radiant]", "radiant"]];
     effect = workflowItemData.effects.find(effect => effect.label == "Holy Weapon Burst");
     effect.disabled = false;

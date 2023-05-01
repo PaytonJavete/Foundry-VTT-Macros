@@ -142,7 +142,7 @@ if (effect != undefined){
     effect.delete();
 }
 
-const effectData = game.dfreds.effectInterface.findEffectByName('Contingency Proc').convertToObject();
+const effectData = game.dfreds.effectInterface.findEffectByName('Contingency Proc').data;
 effectData.name += ` (${spellName})`;
 
 game.dfreds.effectInterface.addEffectWith({ effectData, uuid });
