@@ -6,8 +6,6 @@ optionsText += `<option value="Snow">Snowstorm</option>`;
 
 let storm = "";
 let useLightning = false;
-let drType = "";
-
 let confirmed = false;
 let dialog = new Promise((resolve, reject) => { 
     new Dialog({
@@ -50,10 +48,8 @@ confirmed = await dialog;
 if(!confirmed){
 	return;
 }
-console.log(`Chose ${storm} effct`);
-console.log(`useLightning = ${useLightning}`);
 
-uuid = canvas.tokens.controlled[0].actor.uuid;
+const uuid = canvas.tokens.controlled[0].actor.uuid;
 let flair = "";
 
 // First, choose storm if random
@@ -73,7 +69,7 @@ if (storm == "LFD"){
 			storm = "Thunder";
 			break;
 		case 4:
-			flair = "sour laughter booms like thunder.";
+			flair = "your laughter booms like thunder.";
 			storm = "Thunder";
 			break;
 		case 5:
@@ -97,43 +93,14 @@ if (storm == "LFD"){
 
 // Check to see if storm must be set to lightning
 if (useLightning && storm == "Thunder"){
-	storm = "Thunder(L)";
+	storm = "Lightning";
 }
 
-// Remove all current storms except if current storm same as new storm
-removed = removeStorms(storm);
-if (!removed){
-	return;
-}
+//Remove current storm
+let flag = DAE.getFlag(actor, "Storm");
+if(flag) await game.dfreds.effectInterface.removeEffect({ effectName: `Raging Storm - ${flag}`, uuid });
 
-// Get and edit effect data
-let effectData = game.dfreds.effectInterface.findEffectByName(`Raging Storm - ${storm}`).convertToObject();
-console.log(effectData);
-
-effectData.flags.core.statusId = "";
-
-game.dfreds.effectInterface.addEffectWith({ effectData, uuid });
-
-async function removeStorms(storm){
-	let hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Raging Storm - Fire', uuid);
-	if (hasEffectApplied && storm != "Fire") {
-	  game.dfreds.effectInterface.removeEffect({ effectName: 'Raging Storm - Fire', uuid });
-	  return true;
-	}
-	hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Raging Storm - Thunder(L)', uuid);
-	if (hasEffectApplied && storm != "Thunder(L)") {
-	  game.dfreds.effectInterface.removeEffect({ effectName: 'Raging Storm - Thunder(L)', uuid });
-	  return true;
-	}
-	hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Raging Storm - Thunder', uuid);
-	if (hasEffectApplied && storm != "Thunder") {
-	  game.dfreds.effectInterface.removeEffect({ effectName: 'Raging Storm - Thunder', uuid });
-	  return true;
-	}
-	hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Raging Storm - Snow', uuid);
-	if (hasEffectApplied && storm != "Snow") {
-	  game.dfreds.effectInterface.removeEffect({ effectName: 'Raging Storm - Snow', uuid });
-	  return true;
-	}
-	return false;
-}
+//Add new storm
+DAE.setFlag(actor, "Storm", storm);
+let effectData = await game.dfreds.effectInterface.findEffectByName(`Raging Storm - ${storm}`);
+await game.dfreds.effectInterface.addEffectWith({ effectData, uuid });
