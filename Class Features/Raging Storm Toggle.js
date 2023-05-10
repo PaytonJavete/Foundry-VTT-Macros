@@ -1,3 +1,5 @@
+const actor = game.user.character || canvas.tokens.controlled[0].actor;
+
 let optionsText = "";
 optionsText += `<option value="LFD">Let Fate Decide</option>`;
 optionsText += `<option value="Fire">Firestorm</option>`;
@@ -94,6 +96,12 @@ if (storm == "LFD"){
 // Check to see if storm must be set to lightning
 if (useLightning && storm == "Thunder"){
 	storm = "Lightning";
+	let thunderstorm = actor.items.getName("Thunderstorm");
+	thunderstorm.update({"system.damage.parts": [["1d8[lightning]", "lightning"]]});
+}
+else if (!useLightning && storm == "Thunder"){
+	let thunderstorm = actor.items.getName("Thunderstorm");
+	thunderstorm.update({"system.damage.parts": [["1d8[thunder]", "thunder"]]});
 }
 
 //Remove current storm

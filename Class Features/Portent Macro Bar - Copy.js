@@ -42,7 +42,7 @@ async function generateButtons(macroActor, item, itemName){
                     await item.update({name: `${itemName} [${portentRolled}]`});  // updates the item name to contain the new array.
                     const targetActor = await game.user.targets.first().actor;
                     const uuid = targetActor.uuid;
-                    const effectData = game.dfreds.effectInterface.findEffectByName('Portent').convertToObject();
+                    const effectData = game.dfreds.effectInterface.findEffectByName('Portent').data;
                     for (effect of effectData.changes){
                         if (effect.value == "reroll") break;
                         effect.value = roll;

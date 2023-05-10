@@ -143,7 +143,7 @@ if (effect != undefined){
 }
 
 const effectData = game.dfreds.effectInterface.findEffectByName('Contingency Proc').data;
-effectData.name += ` (${spellName})`;
+effectData.label += ` (${spellName})`;
 
 game.dfreds.effectInterface.addEffectWith({ effectData, uuid });
 

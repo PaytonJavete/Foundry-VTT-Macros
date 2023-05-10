@@ -1,7 +1,7 @@
 async function wait(ms) { return new Promise(resolve => { setTimeout(resolve, ms); }); }
 const lastArg = args[args.length - 1];
-const actor = lastArg.actor;
-const item = lastArg.item;
+const caster = lastArg.actor;
+const name = lastArg.item.name;
 const itemUuid = await fromUuid(lastArg.uuid);
 const damageType = "healing";
 let heal_target = [];
@@ -14,7 +14,7 @@ messages = Array.from(game.messages);
 let workflowId = null;
 for (var i = messages.length - 1; i >= 0; i--) {
     content = messages[i].data.content;
-    if (messages[i].data?.flags["midi-qol"]?.workflowId && messages[i].data.speaker.actor == actor.id && messages[i].data.flavor != "Siphon Vitality"){
+    if (messages[i].data?.flags["midi-qol"]?.workflowId && messages[i].data.speaker.actor == caster.id && messages[i].data.flavor != "Siphon Vitality"){
         workflowId = messages[i].data.flags["midi-qol"].workflowId;
         break;
     }
@@ -47,11 +47,11 @@ if (validTargets.length === 1) {
     await rollList();
 } else if (validTargets.length > 1) {
     let targetList = validTargets.reduce((list, target) => { return list + `<tr><td>${target.name} (HP: ${target.actor.system.attributes.hp.value}/${target.actor.system.attributes.hp.max})</td><td><input type="num" id="target" min="0" max="${healingPool}" name="${target.id}"></td></tr>` }, "");
-    let the_content = `<p>You have currently <b>${healingPool}</b> total ${item.name} points of healing.</p><form class="flexcol"><table width="100%"><tbody><tr><th>Target</th><th>Healing Points</th></tr>${targetList}</tbody></table></form>`;
+    let the_content = `<p>You have currently <b>${healingPool}</b> total ${name} points of healing.</p><form class="flexcol"><table width="100%"><tbody><tr><th>Target</th><th>Healing Points</th></tr>${targetList}</tbody></table></form>`;
     let dialog = new Promise(async (resolve, reject) => {
         let errorMessage;
         new Dialog({
-            title: `${item.name} Healing`,
+            title: `${name} Healing`,
             content: the_content,
             buttons: {
                 heal: {
