@@ -14,7 +14,7 @@ const sourceToken = await fromUuid(lastArg.tokenUuid);
 
 const userColor = game.user?.color ? "0x" + game.user.color.replace(/^#/, '') : 0x0D26FF;
 const range = RANGE;
-const tokenWidth = sourceToken.width;
+const tokenWidth = sourceToken.data.width;
 let startX = sourceToken.x;
 let startY = sourceToken.y;
 
@@ -26,7 +26,7 @@ aaSeq01.effect()
     .fadeIn(500)
     .scaleIn(0, 500)
     .fadeOut(500)
-    .name("teleportation")
+    .name("teleportation - NAME")
     //.elevation(sourceToken?.document?.elevation - 1)
     .persist(true)
     .opacity(0.5)

@@ -3,7 +3,7 @@ const sourceToken = await fromUuid(lastArg.tokenUuid);
 
 const userColor = game.user?.color ? "0x" + game.user.color.replace(/^#/, '') : 0x0D26FF;
 const range = 60;
-const tokenWidth = sourceToken.width;
+const tokenWidth = sourceToken.data.width;
 let startX = sourceToken.x;
 let startY = sourceToken.y;
 
