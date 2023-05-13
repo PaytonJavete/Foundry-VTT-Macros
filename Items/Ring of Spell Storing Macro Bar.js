@@ -1,8 +1,5 @@
 const actorD = canvas.tokens.controlled[0].actor;
-
 let levels = await findStoredSpellLevels(actorD); //will also remove used spells
-console.log(levels);
-let newSpells = [];
 
 const messages = Array.from(game.messages);
 for (var i = messages.length - 1; i >= 0; i--) {
@@ -10,30 +7,30 @@ for (var i = messages.length - 1; i >= 0; i--) {
     if (messages[i].data?.flags["midi-qol"]?.workflowId){
         workflowId = messages[i].data.flags["midi-qol"].workflowId;
         workflow = MidiQOL.Workflow.getWorkflow(workflowId);
-        console.log(workflow);
-        if(workflow.item.type == "spell"){
-        	storedSpell = duplicate(workflow.item);
-        	console.log(storedSpell);
-        	console.log(newSpells);
-            //if cantrip or from a stored spell skip
-        	if(storedSpell.system.level == 0) continue;
-            if(storedSpell.system.materials.value == "Stored Spell") continue;
+        if(workflow?.item.type == "spell"){
+        	let storedSpell = duplicate(workflow.item);
+            let upcastLevel = workflow.castData.castLevel;
+            let name = workflow.actor.name;
+            storedSpell._id = randomID();
+
+        	if(storedSpell.system.level == 0) return ui.notifications.warn("Cannot store cantrips in Ring of Spell Storing."); 
+            levels += upcastLevel;
+            if (levels > 5 ) return ui.notifications.error("Attempted to store more than 5 levels of spells in Ring of Spell Storing");
 
             //if already have spell, just casting it multiple times store multiple charges
-        	if(newSpells.includes(storedSpell)){
-        		index = newSpells.indexOf(storedSpell);
-        		uses = newSpells[index].system.uses;
-        		newSpells[index].system.uses = {max: uses.max+1, value: uses.value+1};
-        	}
+            let existingSpell = actorD.items.find(i => i.name == storedSpell.name && i.system?.materials?.value == `Stored Spell from ${name}` && i.system.level == upcastLevel);
+            if (existingSpell){
+                let uses = existingSpell.system.uses;
+                existingSpell.update({"system.uses": {value: uses.value+1, max: uses.max+1, per: 'charges'}});
+            }
         	else {
         		storedSpell.system.preparation.mode = "atwill";
-				storedSpell.system.uses = {value: 1, max: 1, per: 'charges', recovery: ''}
-				storedSpell.system.materials.value = "Stored Spell";
+				storedSpell.system.uses = {value: 1, max: 1, per: 'charges'};
+				storedSpell.system.materials.value = `Stored Spell from ${name}`;
                 storedSpell.system.materials.consumed = false;
-
-                let upcastLevel = workflow.castData.castLevel           
+          
                 //adjust damage to reflect upcast damage
-                if (storedSpell.system.damage.parts.length > 0){
+                if (storedSpell.system.damage.parts.length > 0 && upcastLevel > storedSpell.system.level){
                     scaling = storedSpell.system.scaling;
                     if (scaling.mode == "level"){
                         if (scaling.formula.includes("@item.level")){
@@ -50,8 +47,10 @@ for (var i = messages.length - 1; i >= 0; i--) {
                 storedSpell.system.level = upcastLevel;
 
                 //set DC to be flat equal to original caster DC
-                storedSpell.system.save.scaling = 'flat';
-                storedSpell.system.save.dc = workflow.actor.system.attributes.spelldc;
+                if (storedSpell.system.save.ability != ""){
+                    storedSpell.system.save.scaling  = 'flat';
+                    storedSpell.system.save.dc = workflow.actor.system.attributes.spelldc;
+                }
                 
                 //set attack roll to be orignal caster attack roll (diff between ringbearer and caster)
                 if (storedSpell.system.actionType.includes("ak")){
@@ -68,26 +67,19 @@ for (var i = messages.length - 1; i >= 0; i--) {
                     storedSpell.system.attackBonus = casterAttack - userAttack;
                 }
 
-                //try ways to implement summons that rely on original actor data??
-	        	newSpells.push(storedSpell);
+	        	await actorD.createEmbeddedDocuments('Item', [storedSpell]); 
         	}
-        	levels += storedSpell.system.level;
-        	console.log(levels);
-       		if (levels == 5) break;
-       		else if (levels > 5 ) return ui.notifications.error("Attempted to store more than 5 levels of spells in Ring of Spell Storing");
+            break;      
         }
     }
 }
 
-await actorD.createEmbeddedDocuments('Item', newSpells);
-
 async function findStoredSpellLevels(user){
 	let n = 0;
 	const ringSpells = user.items.filter(i => i.system?.materials?.value.includes("Stored Spell"));
-    console.log(ringSpells);
 	for (spell of ringSpells){
 		if (spell.system.uses.value > 0) n += (spell.system.level*spell.system.uses.value);
 		else spell.delete();
 	}
-	return n
+	return n;
 }
