@@ -69,6 +69,11 @@ for (var i = messages.length - 1; i >= 0; i--) {
 
 	        	await actorD.createEmbeddedDocuments('Item', [storedSpell]); 
         	}
+            ChatMessage.create({
+                user: game.user._id,
+                speaker: ChatMessage.getSpeaker({token: actorD}),
+                content: `Stored ${storedSpell.name} from ${name} in Ring of Spell Storing.`
+            });
             break;      
         }
     }
