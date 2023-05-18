@@ -1,12 +1,12 @@
-const token = canvas.tokens.get(args[0].tokenId);
-const actor = token.actor;
-const item = actor.items.getName("Fire Storm");
-const workflowItemData = duplicate(item);
+const tokenS = canvas.tokens.get(args[0].tokenId);
+const actorS = tokenS.actor;
+const itemS = actorS.items.getName("Fire Storm");
+const workflowItemData = duplicate(itemS);
 workflowItemData.system.preparation.mode = "atwill";
 workflowItemData.system.uses = {max: null, per: "", value: null};
 setProperty(workflowItemData, "flags.itemacro", {});
 
-const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: actor });
+const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: actorS });
 const options = { showFullCard: false, createWorkflow: true, configureDialog: true };
 
 for (let i = 0; i < 9; i++){

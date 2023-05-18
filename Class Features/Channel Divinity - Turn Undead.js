@@ -1,4 +1,3 @@
-@@ -1,79 +0,0 @@
 async function wait(ms) { return new Promise(resolve => { setTimeout(resolve, ms); }); }
 lastArg = args[args.length-1];
 
