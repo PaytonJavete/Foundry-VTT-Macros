@@ -19,10 +19,10 @@ for (var i = messages.length - 1; i >= 0; i--) {
         break;
     }
 }
-let workflow = MidiQOL.Workflow.getWorkflow(workflowId);
-console.log(workflow);
+console.log(workflowId);
+let damageWorkflow = await MidiQOL.Workflow.getWorkflow(workflowId);
 let healingPool = 0;
-for (entry of workflow.damageDetail) healingPool += entry.damage;
+for (entry of damageWorkflow.damageDetail) healingPool += entry.damage;
 
 if (healingPool == 0){
     return ui.notifications.error("Siphon Vitality: No damage done")

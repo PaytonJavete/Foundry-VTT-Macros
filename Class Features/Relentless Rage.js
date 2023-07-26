@@ -1,21 +1,21 @@
 async function wait(ms) { return new Promise(resolve => { setTimeout(resolve, ms); }); }
 const lastArg = args[args.length - 1];
-const actor = canvas.tokens.get(lastArg.tokenId).actor;
-const DC = DAE.getFlag(actor, "RelentlessRage");
-const hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Rage', actor.uuid);
+const actorM = canvas.tokens.get(lastArg.tokenId).actor;
+const DC = DAE.getFlag(actorM, "RelentlessRage");
+const hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Rage', actorM.uuid);
 let effectData = lastArg.efData;
 console.log(args);
 
 if (args[0] == "off" && lastArg["expiry-reason"] == 'midi-qol:rest') {	
-	DAE.setFlag(actor, "RelentlessRage", 10);
-	await actor.createEmbeddedDocuments('ActiveEffect', [effectData]);
+	DAE.setFlag(actorM, "RelentlessRage", 10);
+	await actorM.createEmbeddedDocuments('ActiveEffect', [effectData]);
 }
 
 if (args[0] == "off" && lastArg["expiry-reason"] == 'midi-qol:zeroHP' && hasEffectApplied) {
-	await wait(1000); // needed cause sometiems updates too fast
+	await wait(1000); // needed cause sometimes updates too fast
 
-	const item = await actor.items.getName("Relentless Rage");
-	const workflowItemData = duplicate(item);
+	const itemM = await actorM.items.getName("Relentless Rage");
+	const workflowItemData = duplicate(itemM);
 	workflowItemData.system.save.dc = DC;
 
 	setProperty(workflowItemData, "flags.itemacro", {});
@@ -23,20 +23,20 @@ if (args[0] == "off" && lastArg["expiry-reason"] == 'midi-qol:zeroHP' && hasEffe
     setProperty(workflowItemData, "flags.dae", {});
     setProperty(workflowItemData, "effects", []);
 
-	const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: actor });
+	const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: actorM });
     const options = { showFullCard: false, createWorkflow: true, configureDialog: false };
     const result = await MidiQOL.completeItemRoll(spellItem, options);
 
 	if (result.failedSaves.size == 0){
-		await actor.update({"system.attributes.hp.value": 1});
+		await actorM.update({"system.attributes.hp.value": 1});
 		newDC = DC + 5;
-		DAE.setFlag(actor, "RelentlessRage", newDC);
-		let prone = actor.effects.find(e => e.label == "Prone");
+		DAE.setFlag(actorM, "RelentlessRage", newDC);
+		let prone = actorM.effects.find(e => e.label == "Prone");
 		prone.delete();
 	}
-	await actor.createEmbeddedDocuments('ActiveEffect', [effectData]);
+	await actorM.createEmbeddedDocuments('ActiveEffect', [effectData]);
 }
 
 if (args[0] == "off" && lastArg["expiry-reason"] == 'midi-qol:zeroHP' && !hasEffectApplied) {
-	await actor.createEmbeddedDocuments('ActiveEffect', [effectData]);
+	await actorM.createEmbeddedDocuments('ActiveEffect', [effectData]);
 }
