@@ -1,6 +1,6 @@
 let concentrating = actor.effects.some(effect => effect.sourceName == "Sunbeam" && effect.label == "Concentrating");
 if(!concentrating){
-    game.dnd5e.macros.rollItem("Sunbeam");
+    dnd5e.documents.macro.rollItem("Sunbeam");
 } else {
     const item = actor.items.getName("Sunbeam");
     const workflowItemData = duplicate(item);
@@ -8,7 +8,7 @@ if(!concentrating){
     workflowItemData.system.preparation.mode = "atwill";
     workflowItemData.system.uses = {max: null, per: "", value: null};
     workflowItemData.system.duration = { value: null, units: "inst" };
-    blindEffect = workflowItemData.effects.find(effect => effect.label == "Sunbeam Blind");
+    blindEffect = workflowItemData.effects.find(effect => effect.name == "Sunbeam Blind");
     setProperty(workflowItemData, "effects", [blindEffect]);
 
     const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: actor });
