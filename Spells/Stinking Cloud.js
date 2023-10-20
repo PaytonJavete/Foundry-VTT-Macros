@@ -12,7 +12,7 @@ if (args[0].tag === "OnUse" && args[0].macroPass === "preActiveEffects") {
   template.update({"flags.perfect-vision.visionLimitation": { "sight": 0, "enabled": true}});
   new Sequence()
     .effect()
-      .file("jb2a.fog_cloud.2.green")
+      .file("modules/jb2a_patreon/Library/1st_Level/Fog_Cloud/FogCloud_02_Regular_Green02_800x800.webm")
       .size({
         width: canvas.grid.size * ((template.distance*2.5) / canvas.dimensions.distance),
         height: canvas.grid.size * ((template.distance*2.5) / canvas.dimensions.distance),

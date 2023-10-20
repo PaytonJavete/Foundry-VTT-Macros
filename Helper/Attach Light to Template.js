@@ -1,7 +1,4 @@
-const params = args[0];
-
-template = params.template;
-light = await createLight(params.light, template.x, template.y);
+light = await createLight(light_P, template.x, template.y);
 
 let updateHook = Hooks.on("updateMeasuredTemplate", (template) => templateUpdated(template));
 let deleteHook = Hooks.on("preDeleteMeasuredTemplate", (template) => templateDeleted(template));

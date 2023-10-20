@@ -1,11 +1,8 @@
 //##############################################################################################################################
 // Call Macro
-// - On self applied effect
+// - Flags Damage Bonus Macro from poison item before attacking
 // Variables (search and replace)
-// - NAME : name of the token that is summoned
+// - DC : save dc for poison
+// - DAMAGE : total damage for poison
 //##############################################################################################################################
-if (args[0] === "off"){
-	const userId = game.userId;
-	let token_S = canvas.tokens.placeables.filter(t => t.actor.flags?.warpgate?.control.user == userId && t.document.name == "NAME")[0];
-	if (token_S)token_S.document.delete();
-}
+console.log(args);
