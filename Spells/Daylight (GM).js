@@ -1,8 +1,15 @@
 // This Macro is called by the Darkness spell so players can place walls and lights.
+/* 
+Parameters passed:
+  - state: ["on" or "off"]
+  - daylightSpellParams: {
+      x: template.x,
+      y: template.y,
+      targetActorId: targetActor.id,
+  }
+ */
 
-const daylightParams = args[args.length - 1];
-
-function daylightLight(cx, cy, radius) {
+function daylightLight(cx, cy) {
   const lightTemplate = {
     x: cx,
     y: cy,
@@ -12,9 +19,9 @@ function daylightLight(cx, cy, radius) {
     config: {
       alpha: 0.5,
       angle: 0,
-      bright: radius,
+      bright: 60,
       coloration: 1,
-      dim: radius,
+      dim: 120,
       gradual: false,
       luminosity: 0.5,
       saturation: 0,
@@ -31,7 +38,7 @@ function daylightLight(cx, cy, radius) {
     flags: {
       spellEffects: {
         Daylight: {
-          ActorId: daylightParams.targetActorId,
+          ActorId: daylightSpellParams.targetActorId,
         },
       },
     },
@@ -39,13 +46,13 @@ function daylightLight(cx, cy, radius) {
   canvas.scene.createEmbeddedDocuments("AmbientLight", [lightTemplate]);
 }
 
-if (args[0] == "on") {
-  daylightLight(daylightParams.x, daylightParams.y, daylightParams.distance);
+if (state == "on") {
+  daylightLight(daylightSpellParams.x, daylightSpellParams.y);
   const darkLights = canvas.lighting.placeables.filter((w) => w.data.flags?.spellEffects?.Darkness);
   if (darkLights.length > 0){
     const lightArray = [];
     for (darkness of darkLights){
-      if (canvas.grid.measureDistance({ x: daylightParams.x, y: daylightParams.y}, { x: darkness.x, y: darkness.y }) <= 120){
+      if (canvas.grid.measureDistance({ x: daylightSpellParams.x, y: daylightSpellParams.y}, { x: darkness.x, y: darkness.y }) <= 120){
         lightArray.push(darkness.id);
       }
     }
@@ -53,8 +60,8 @@ if (args[0] == "on") {
   }
 }
 
-if (args[0] == "off") {
-  const dayLights = canvas.lighting.placeables.filter((w) => w.data.flags?.spellEffects?.Daylight?.ActorId === daylightParams.targetActorId);
+if (state == "off") {
+  const dayLights = canvas.lighting.placeables.filter((w) => w.data.flags?.spellEffects?.Daylight?.ActorId === daylightSpellParams.targetActorId);
   const lightArray = dayLights.map((w) => w.id);
   await canvas.scene.deleteEmbeddedDocuments("AmbientLight", lightArray);
 }

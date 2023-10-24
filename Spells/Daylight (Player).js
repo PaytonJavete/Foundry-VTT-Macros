@@ -1,7 +1,5 @@
 if (!game.modules.get("advanced-macros")?.active) ui.notifications.error("Please enable the Advanced Macros module");
 
-console.log(args);
-
 const lastArg = args[args.length - 1];
 const tokenOrActor = await fromUuid(lastArg.actorUuid);
 const targetActor = tokenOrActor.actor ? tokenOrActor.actor : tokenOrActor;
@@ -10,18 +8,15 @@ const gmMacroName = "Daylight (GM)";
 
 if (args[0] === "on") {
   Hooks.once("createMeasuredTemplate", async (template) => {
-    let radius = canvas.grid.size * (template.distance / canvas.grid.grid.options.dimensions.distance);
     const daylightSpellParams = {
-      radius,
       x: template.x,
       y: template.y,
-      distance: template.distance,
       targetActorId: targetActor.id,
     };
-    await DAE.setFlag(targetActor, "darknessSpell", daylightSpellParams);
+    await DAE.setFlag(targetActor, "daylightSpell", daylightSpellParams);
     canvas.scene.deleteEmbeddedDocuments("MeasuredTemplate", [template.id]);
     const gmMacro = game.macros.find(m => m.name === gmMacroName);
-    gmMacro.execute("on", daylightSpellParams);
+    gmMacro.execute({state: "on", daylightSpellParams});
   });
 
   const measureTemplateData = {
@@ -48,8 +43,8 @@ if (args[0] === "on") {
 }
 
 if (args[0] === "off") {
-  const params = await DAE.getFlag(targetActor, "darknessSpell");
+  const daylightSpellParams = await DAE.getFlag(targetActor, "daylightSpell");
   const gmMacro = game.macros.find(m => m.name === gmMacroName);
-  gmMacro.execute("off", params);
-  await DAE.unsetFlag(targetActor, "darknessSpell");
+  gmMacro.execute({state: "off", daylightSpellParams});
+  await DAE.unsetFlag(targetActor, "daylightSpell");
 }

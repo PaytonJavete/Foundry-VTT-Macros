@@ -1,5 +1,13 @@
-const dlParams = args[args.length - 1];
-const actorId = dlParams.targetActorId
+/* 
+Parameters passed:
+  - state: ["on" or "off"]
+  - dlSpellParams: {
+      x: template.data.x,
+      y: template.data.y,
+      lightColor: color,
+      targetActorId: targetActor.id,
+  }
+ */
 
 function dancingLight(cx, cy, color) {
   const lightTemplate = {
@@ -30,7 +38,7 @@ function dancingLight(cx, cy, color) {
     flags: {
       spellEffects: {
         DancingLights: {
-          ActorId: actorId,
+          ActorId: dlSpellParams.targetActorId,
         },
       },
     },
@@ -38,12 +46,12 @@ function dancingLight(cx, cy, color) {
   canvas.scene.createEmbeddedDocuments("AmbientLight", [lightTemplate]);
 }
 
-if (args[0] === "on") {
-  dancingLight(dlParams.x, dlParams.y, dlParams.lightColor)
+if (state === "on") {
+  dancingLight(dlSpellParams.x, dlSpellParams.y, dlSpellParams.lightColor)
 }
 
-if (args[0] === "off") {
-  const dancingLights = canvas.lighting.placeables.filter((w) => w.data.flags?.spellEffects?.DancingLights?.ActorId === actorId);
+if (state === "off") {
+  const dancingLights = canvas.lighting.placeables.filter((w) => w.data.flags?.spellEffects?.DancingLights?.ActorId === dlSpellParams.targetActorId);
   const lightArray = dancingLights.map((w) => w.id);
   await canvas.scene.deleteEmbeddedDocuments("AmbientLight", lightArray);
 }

@@ -1,3 +1,9 @@
+/* 
+Parameters passed:
+  - template: {x: [x value of template], y: [y value of template], uuid: [template uuid]}
+  - light_P: {dim: [int], bright: [int], color: [color hex]}};
+ */
+
 light = await createLight(light_P, template.x, template.y);
 
 let updateHook = Hooks.on("updateMeasuredTemplate", (template) => templateUpdated(template));

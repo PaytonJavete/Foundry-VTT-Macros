@@ -38,7 +38,7 @@ if (args[0] === "on"){
       await DAE.setFlag(targetActor, "agSpell", agSpellParams);
       canvas.scene.deleteEmbeddedDocuments("MeasuredTemplate", [template.id]);
       const gmMacro = game.macros.find(m => m.name === gmMacroName);
-      gmMacro.execute("on", agSpellParams);
+      gmMacro.execute({state: "on", agSpellParams});
     });
 
     let measureTemplateData = {
@@ -67,8 +67,8 @@ if (args[0] === "on"){
 
 
 if (args[0] === "off") {
-  const params = await DAE.getFlag(targetActor, "agSpell");
+  const agSpellParams = await DAE.getFlag(targetActor, "agSpell");
   const gmMacro = game.macros.find(m => m.name === gmMacroName);
-  gmMacro.execute("off", params);
+  gmMacro.execute({state: "off", agSpellParams});
   await DAE.unsetFlag(targetActor, "agSpell");
 }

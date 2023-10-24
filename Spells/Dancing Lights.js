@@ -244,7 +244,7 @@ if (args[0] === "on"){
       await DAE.setFlag(targetActor, "dlSpell", dlSpellParams);
       canvas.scene.deleteEmbeddedDocuments("MeasuredTemplate", [template.id]);
       const gmMacro = game.macros.find(m => m.name === gmMacroName);
-      gmMacro.execute("on", dlSpellParams);  
+      gmMacro.execute({state: "on", dlSpellParams});  
     });
     const doc = new CONFIG.MeasuredTemplate.documentClass(measureTemplateData, { parent: canvas.scene });
     const measureTemplate = new game.dnd5e.canvas.AbilityTemplate(doc);
@@ -297,7 +297,7 @@ if (args[0] === "on"){
         await DAE.setFlag(targetActor, "dlSpell", dlSpellParams);
         canvas.scene.deleteEmbeddedDocuments("MeasuredTemplate", [template.id]);
         const gmMacro = game.macros.find(m => m.name === gmMacroName);
-        gmMacro.execute("on", dlSpellParams);  
+        gmMacro.execute({state: "on", dlSpellParams});  
       });
       const doc = new CONFIG.MeasuredTemplate.documentClass(measureTemplateData, { parent: canvas.scene });
       const measureTemplate = new game.dnd5e.canvas.AbilityTemplate(doc);
@@ -308,8 +308,8 @@ if (args[0] === "on"){
 }
 
 if (args[0] === "off") {
-  const params = await DAE.getFlag(targetActor, "dlSpell");
+  const dlSpellParams = await DAE.getFlag(targetActor, "dlSpell");
   const gmMacro = game.macros.find(m => m.name === gmMacroName);
-  gmMacro.execute("off", params);
+  gmMacro.execute({state: "off", dlSpellParams});
   await DAE.unsetFlag(targetActor, "dlSpell");
 }
