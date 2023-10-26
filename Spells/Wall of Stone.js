@@ -1,7 +1,3 @@
-if (!game.modules.get("advanced-macros")?.active) ui.notifications.error("Please enable the Advanced Macros module");
-
-console.log(args);
-
 const lastArg = args[args.length - 1];
 const tokenOrActor = await fromUuid(lastArg.actorUuid);
 const targetActor = tokenOrActor.actor ? tokenOrActor.actor : tokenOrActor;
@@ -86,7 +82,7 @@ if (args[0] === "on"){
       await DAE.setFlag(targetActor, "wosSpell", wosSpellParams);
       canvas.scene.deleteEmbeddedDocuments("MeasuredTemplate", [template.id]);
       const gmMacro = game.macros.find(m => m.name === gmMacroName);
-      gmMacro.execute("on", wosSpellParams);
+      gmMacro.execute({state: "on", wosSpellParams});
     });
  
     let measureTemplateData = {
@@ -156,8 +152,8 @@ if (args[0] === "on"){
 
 
 if (args[0] === "off" && !args[1]["expiry-reason"]?.includes("times-up")) {
-  const params = await DAE.getFlag(targetActor, "wosSpell");
+  const wosSpellParams = await DAE.getFlag(targetActor, "wosSpell");
   const gmMacro = game.macros.find(m => m.name === gmMacroName);
-  gmMacro.execute("off", params);
+  gmMacro.execute({state: "off", wosSpellParams});
   await DAE.unsetFlag(targetActor, "wosSpell");
 }

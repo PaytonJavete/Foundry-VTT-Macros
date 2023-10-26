@@ -48,15 +48,15 @@ function daylightLight(cx, cy) {
 
 if (state == "on") {
   daylightLight(daylightSpellParams.x, daylightSpellParams.y);
-  const darkLights = canvas.lighting.placeables.filter((w) => w.data.flags?.spellEffects?.Darkness);
-  if (darkLights.length > 0){
-    const lightArray = [];
-    for (darkness of darkLights){
+  const magicalDarkness = canvas.templates.placeables.filter((w) => w.data.flags?.spellEffects?.magicalDark?.level <= 3);
+  if (magicalDarkness.length > 0){
+    const templateArray = [];
+    for (darkness of magicalDarkness){
       if (canvas.grid.measureDistance({ x: daylightSpellParams.x, y: daylightSpellParams.y}, { x: darkness.x, y: darkness.y }) <= 120){
-        lightArray.push(darkness.id);
+        templateArray.push(darkness.id);
       }
     }
-    await canvas.scene.deleteEmbeddedDocuments("AmbientLight", lightArray);   
+    await canvas.scene.deleteEmbeddedDocuments("MeasuredTemplate", templateArray);   
   }
 }
 

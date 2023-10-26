@@ -1,6 +1,15 @@
 // This Macro is called by the Wall of Force spell so players can place walls.
-
-const wofParams = args[args.length - 1];
+/*
+Parameters passed:
+  - state: ["on" or "off"]
+  - wofSpellParams: {
+        radius,
+        x: template.x,
+        y: template.y,
+        distance: template.distance,
+        targetActorId: targetActor.id,
+  }
+ */
 
 function circleWall(cx, cy, radius) {
   let walls = [];
@@ -26,7 +35,7 @@ function circleWall(cx, cy, radius) {
       flags: {
         spellEffects: {
           WoF: {
-            ActorId: wofParams.targetActorId,
+            ActorId: wofSpellParams.targetActorId,
           },
         },
       },
@@ -64,7 +73,7 @@ function lineWall(x, y, direction, gridLine){
     flags: {
       spellEffects: {
         WoF: {
-          ActorId: wofParams.targetActorId,
+          ActorId: wofSpellParams.targetActorId,
         },
       },
     },
@@ -73,22 +82,22 @@ function lineWall(x, y, direction, gridLine){
   canvas.scene.createEmbeddedDocuments("Wall", walls);
 }
 
-if (args[0] == "on") {
-  if (wofParams.hasOwnProperty('radius')){
-      circleWall(wofParams.x, wofParams.y, wofParams.radius);
+if (state == "on") {
+  if (wofSpellParams.hasOwnProperty('radius')){
+      circleWall(wofSpellParams.x, wofSpellParams.y, wofSpellParams.radius);
       new Sequence()
         .effect()
             .file("modules/JB2A_DnD5e/Library/5th_Level/Wall_Of_Force/WallOfForce_01_Grey_Sphere_400x400.webm")
-            .atLocation({ x: wofParams.x, y: wofParams.y })
+            .atLocation({ x: wofSpellParams.x, y: wofSpellParams.y })
             .name("WoF")
             .persist()
         .play();
   }
   else {
-    if (wofParams.isHorizontal){
-      let theta = Math.toRadians(wofParams.direction);
-      let destinationX = Math.floor(wofParams.x + (Math.cos(theta) * (0.5 * wofParams.gridLine)));
-      let destinationY = Math.floor(wofParams.y + (Math.sin(theta) * (0.5 * wofParams.gridLine)));
+    if (wofSpellParams.isHorizontal){
+      let theta = Math.toRadians(wofSpellParams.direction);
+      let destinationX = Math.floor(wofSpellParams.x + (Math.cos(theta) * (0.5 * wofSpellParams.gridLine)));
+      let destinationY = Math.floor(wofSpellParams.y + (Math.sin(theta) * (0.5 * wofSpellParams.gridLine)));
       new Sequence()
         .effect()
             .file("modules/JB2A_DnD5e/Library/5th_Level/Wall_Of_Force/WallOfForce_01_Grey_H_200x200.webm")
@@ -98,13 +107,13 @@ if (args[0] == "on") {
         .play();
     }
     else {
-      lineWall(wofParams.x, wofParams.y, wofParams.direction, wofParams.gridLine);
+      lineWall(wofSpellParams.x, wofSpellParams.y, wofSpellParams.direction, wofSpellParams.gridLine);
     }
   }
 }
 
-if (args[0] == "off") {
-  actorId = wofParams.targetActorId
+if (state == "off") {
+  actorId = wofSpellParams.targetActorId
   let wofWalls = canvas.walls.placeables.filter(wall => wall.document.flags?.spellEffects?.WoF.ActorId == actorId);
   const wallArray = wofWalls.map((w) => w.id);
   await canvas.scene.deleteEmbeddedDocuments("Wall", wallArray);

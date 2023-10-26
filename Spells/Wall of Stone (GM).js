@@ -1,6 +1,19 @@
 // This Macro is called by the Wall of Force spell so players can place walls.
-
-const wosParams = args[args.length - 1];
+/* 
+Parameters passed:
+  - state: ["on" or "off"]
+  - wosSpellParams: {
+        gridLine,
+        isHorizontal,
+        direction: template.direction,
+        x: template.x,
+        y: template.y,
+        distance: template.distance,
+        targetActorId: targetActor.id,
+        isThick: thick,
+        tokenImage: image,
+  }
+ */
 
 async function lineWall(x, y, direction, gridLine){
   theta = Math.toRadians(direction);
@@ -31,7 +44,7 @@ async function lineWall(x, y, direction, gridLine){
     flags: {
       spellEffects: {
         WoS: {
-          ActorId: wosParams.targetActorId,
+          ActorId: wosSpellParams.targetActorId,
         },
       },
     },
@@ -40,29 +53,29 @@ async function lineWall(x, y, direction, gridLine){
   canvas.scene.createEmbeddedDocuments("Wall", walls);
 }
 
-if (args[0] == "on") {
-  if (wosParams.isHorizontal){
-    let theta = Math.toRadians(wosParams.direction);
-    let destinationX = Math.floor(wosParams.x + (Math.cos(theta) * (0.5 * wosParams.gridLine)));
-    let destinationY = Math.floor(wosParams.y + (Math.sin(theta) * (0.5 * wosParams.gridLine)));
+if (state == "on") {
+  if (wosSpellParams.isHorizontal){
+    let theta = Math.toRadians(wosSpellParams.direction);
+    let destinationX = Math.floor(wosSpellParams.x + (Math.cos(theta) * (0.5 * wosSpellParams.gridLine)));
+    let destinationY = Math.floor(wosSpellParams.y + (Math.sin(theta) * (0.5 * wosSpellParams.gridLine)));
 
     let panel = game.actors.getName("Stone Wall");
     let tokenData = [duplicate(panel.prototypeToken)];
 
-    if (wosParams.isThick){
+    if (wosSpellParams.isThick){
       tokenData[0].x = destinationX-100;
       tokenData[0].y = destinationY-100;
-      tokenData[0].rotation = wosParams.direction - 45;     
+      tokenData[0].rotation = wosSpellParams.direction - 45;     
     } else {
       tokenData[0].x = destinationX-100;
       tokenData[0].y = destinationY-200;
-      tokenData[0].rotation = wosParams.direction + 90; 
+      tokenData[0].rotation = wosSpellParams.direction + 90; 
     }
 
     let wallToken = await canvas.scene.createEmbeddedDocuments("Token", tokenData);
     token = canvas.tokens.get(wallToken[0].id);
 
-    if (wosParams.isThick){
+    if (wosSpellParams.isThick){
       token.document.update({height: 2});
     } else {
       token.document.update({height: 4});
@@ -70,12 +83,12 @@ if (args[0] == "on") {
     await updatePanelToken(token, panel);
   }
   else {
-    await lineWall(wosParams.x, wosParams.y, wosParams.direction, wosParams.gridLine);
+    await lineWall(wosSpellParams.x, wosSpellParams.y, wosSpellParams.direction, wosSpellParams.gridLine);
   }
 }
 
-if (args[0] == "off") {
-  actorId = wosParams.targetActorId
+if (state == "off") {
+  actorId = wosSpellParams.targetActorId
   let wosWalls = canvas.walls.placeables.filter(wall => wall.document.flags?.spellEffects?.WoS.ActorId == actorId);
 
   let allTokens = canvas.tokens.placeables;
@@ -91,11 +104,11 @@ if (args[0] == "off") {
 
 async function updatePanelToken(token, panel){
     await token.document.update({width: 2});  
-    await token.document.update({flags: {wos: wosParams.targetActorId}});
-    await token.document.update({img: wosParams.tokenImage});
+    await token.document.update({flags: {wos: wosSpellParams.targetActorId}});
+    await token.document.update({img: wosSpellParams.tokenImage});
     await token.document.update({actorId: panel.id});
     await token.document.update({actor: panel});
-    if (!wosParams.isThick){
+    if (!wosSpellParams.isThick){
       await token.actor.update({"system.attributes.hp.max": 90});
       await token.actor.update({"system.attributes.hp.value": 90});
     }

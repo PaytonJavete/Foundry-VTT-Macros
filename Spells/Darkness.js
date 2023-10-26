@@ -1,35 +1,10 @@
-if (!game.modules.get("advanced-macros")?.active) ui.notifications.error("Please enable the Advanced Macros module");
+const lastArg = args[args.length-1];
 
-const lastArg = args[args.length - 1];
-const tokenOrActor = await fromUuid(lastArg.actorUuid);
-const targetActor = tokenOrActor.actor ? tokenOrActor.actor : tokenOrActor;
-
-const gmMacroName = "Darkness (GM)";
-
-if (args[0] === "on") {
-  Hooks.once("createMeasuredTemplate", async (template) => {
-    const darknessSpellParams = {
-      x: template.data.x,
-      y: template.data.y,
-      targetActorId: targetActor.id,
-    };
-    await DAE.setFlag(targetActor, "darknessSpell", darknessSpellParams);
-    const gmMacro = game.macros.find(m => m.name === gmMacroName);
-    gmMacro.execute({state: "on", darknessSpellParams});
-  });
-
-  const measureTemplateData = {
-    t: "circle",
-    user: game.userId,
-    distance: 15,
-    direction: 0,
-    x: 0,
-    y: 0,
-    fillColor: game.user.color,
-    flags: {
+let templateD = canvas.templates.placeables.find((w) => w.document.flags.dnd5e.origin == lastArg.itemUuid);
+let darkness_flags = {
       spellEffects: {
-        Darkness: {
-          ActorId: targetActor.id,
+        magicalDark: {
+          level: lastArg.castData.castLevel,
         },
       },
       limits: {
@@ -40,18 +15,6 @@ if (args[0] === "on") {
         },
         light: { enabled: true, range: 0 },
       },
-    },
-  };
+    };
 
-  const doc = new CONFIG.MeasuredTemplate.documentClass(measureTemplateData, { parent: canvas.scene });
-  const measureTemplate = new game.dnd5e.canvas.AbilityTemplate(doc);
-  measureTemplate.actorSheet = targetActor.sheet;
-  measureTemplate.drawPreview();
-}
-
-if (args[0] === "off") {
-  const darknessSpellParams = await DAE.getFlag(targetActor, "darknessSpell");
-  const gmMacro = game.macros.find(m => m.name === gmMacroName);
-  gmMacro.execute({state: "off", darknessSpellParams});
-  await DAE.unsetFlag(targetActor, "darknessSpell");
-}
+templateD.document.update({flags: darkness_flags});
