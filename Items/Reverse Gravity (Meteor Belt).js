@@ -14,7 +14,7 @@ if(isCaster){
 		    	.size({width: size, height: size})
 		        .file("jb2a.magic_signs.circle.02.transmutation.intro.green")
 		        .atLocation(token)
-		    .waitUntilFinished(-500)
+		    .waitUntilFinished(-1000)
 		    .effect()
 		    	.size({width: size, height: size})
 		        .file("jb2a.magic_signs.circle.02.transmutation.loop.green")
@@ -30,7 +30,7 @@ if(isCaster){
 		        .file("jb2a.magic_signs.circle.02.transmutation.outro.green")
 		        .atLocation(token)
 		    .play()
-		await wait(500);
+		await wait(1000);
 		await Sequencer.EffectManager.endEffects({ name: "Reverse Gravity", origin: lastArg.tokenUuid });
 	}
 } else {
