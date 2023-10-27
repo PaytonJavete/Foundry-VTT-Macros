@@ -1,28 +1,25 @@
-if (!game.modules.get("advanced-macros")?.active) {
-  ui.notifications.error("Advanced Macros is not enabled");
-  return;
-} else if(!game.modules.get("ActiveAuras")?.active) {
-  ui.notifications.error("ActiveAuras is not enabled");
-  return;
-}
+AAhelpers.applyTemplate(args);
 
-if (args[0].tag === "OnUse" && args[0].macroPass === "preActiveEffects") {
-  const lastArg = args[args.length - 1];
-  const template = await fromUuid(lastArg.templateUuid);
-  template.update({"flags.perfect-vision.visionLimitation": { "sight": 0, "enabled": true}});
-  new Sequence()
-    .effect()
-      .file("modules/jb2a_patreon/Library/1st_Level/Fog_Cloud/FogCloud_02_Regular_Green02_800x800.webm")
-      .size({
-        width: canvas.grid.size * ((template.distance*2.5) / canvas.dimensions.distance),
-        height: canvas.grid.size * ((template.distance*2.5) / canvas.dimensions.distance),
-      })
-      .persist(true)
-      .aboveLighting()
-      .origin(lastArg.itemUuid)
-      .atLocation({x: template.x, y: template.y})
-      .attachTo(template)
-    .play();
+const lastArg = args[args.length - 1];
+let templateM = canvas.templates.placeables.find((w) => w.document.flags.dnd5e.origin == lastArg.itemUuid);
+let HO_flags = {
+      limits: {
+        sight: {
+          basicSight: { enabled: true, range: 0 }, // Darkvision
+          lightPerception: { enabled: true, range: 0 }, // Light Perception
+        },
+        light: { enabled: true, range: 0 },
+      },
+    };
+templateM.document.update({flags: HO_flags});
 
-  return await AAhelpers.applyTemplate(args);
-}
+let size = canvas.grid.size * ((templateM.document.distance*2.5) / canvas.dimensions.distance);
+new Sequence()
+  .effect()
+    .file("jb2a.fog_cloud.02.green02")
+    .persist()
+    .aboveLighting()
+    .origin(lastArg.itemUuid)
+    .atLocation(templateM)
+    .size({width: size, height: size})
+  .play()

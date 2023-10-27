@@ -1,4 +1,4 @@
-// OnUse - AFter effects
+// OnUse - After targeting
 
 let workflow = MidiQOL.Workflow.getWorkflow(args[0].uuid);
 let targetList = game.user.targets;
@@ -6,7 +6,6 @@ let caster = workflow.token;
 
 // use first token targeted as initial target, remove from list
 const [initTarget] = targetList;
-targetList.delete(initTarget);
 
 let sequence = new Sequence() // this is the naimation part, handled by the Sequencer module
     .effect()
@@ -20,7 +19,12 @@ let sequence = new Sequence() // this is the naimation part, handled by the Sequ
         .atLocation(initTarget)
         .wait(100)
 
+let skipFirst = true;
 for(let target of targetList){
+    if(skipFirst){
+        skipFirst = false;
+        continue;
+    }
     sequence
         .effect()
             .file("jb2a.chain_lightning.secondary.blue")

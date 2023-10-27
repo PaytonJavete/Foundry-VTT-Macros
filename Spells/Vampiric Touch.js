@@ -1,11 +1,9 @@
 lastArg = args[args.length-1];
-console.log(lastArg);
 const token = canvas.tokens.get(lastArg.tokenId);
 const actor = token.actor;
-const item = await fromUuid(lastArg.uuid);
 
 // save damage data
-if (item.system.components.concentration != false){
+if (lastArg.item.system.components.concentration){
 	let formula = "";
 	// for checking if potent blood used
 	if (lastArg.item.system.preparation.mode == "atwill"){
@@ -17,7 +15,7 @@ if (item.system.components.concentration != false){
 }
 
 if (lastArg.hitTargets.length != 1){
-	if (item.system.components.concentration != false) MidiQOL.addConcentration(actor, {item: item, targets: new Set([token]), templateUuid: null});
+	if (lastArg.item.system.components.concentration) MidiQOL.addConcentration(actor, {item: item, targets: new Set([token]), templateUuid: null});
 	return;
 }
 

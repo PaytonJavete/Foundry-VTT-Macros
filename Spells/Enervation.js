@@ -5,14 +5,13 @@ if (lastArg.tag == "OnUse"){
 
 	const token = canvas.tokens.get(lastArg.tokenId);
 	const actor = token.actor;
-	const item = await fromUuid(lastArg.uuid);
 
 	let damage = lastArg.damageList[0].appliedDamage;
 	let totalHeal = Math.floor(damage / 2);
-	await MidiQOL.applyTokenDamage([{ damage: totalHeal, type: "healing" }], totalHeal, new Set([token]), item, new Set());
+	await MidiQOL.applyTokenDamage([{ damage: totalHeal, type: "healing" }], totalHeal, new Set([token]), lastArg.item, new Set());
 
 	// save damage data, play effect, end conc if saved
-	if (item.system.components.concentration != false){
+	if (lastArg.item.system.components.concentration != false){
 		//Remove concentration if they succeeded on save
 		let effect = actor.effects.find(effect => effect.label.includes("Concentrating"));
 	    if (effect == undefined){

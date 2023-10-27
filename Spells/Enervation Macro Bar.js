@@ -1,6 +1,6 @@
 let concentrating = actor.effects.find(effect => effect.sourceName == "Enervation" && effect.label == "Concentrating");
 if(concentrating == undefined){
-    game.dnd5e.macros.rollItem("Enervation");
+    dnd5e.documents.macro.rollItem("Enervation");
 } else {
     const item = actor.items.getName("Enervation");
     const damage = DAE.getFlag(actor, "EnervationDamage");

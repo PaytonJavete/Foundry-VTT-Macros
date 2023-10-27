@@ -68,13 +68,7 @@ if (args[0].tag === "OnUse" && args[0].macroPass === "preActiveEffects") {
   gmMacro.execute(params);
 } 
 else if (args[0] == "on") {
-  if (lastArg.efData.flags.ActiveAuras?.isAura){
-    let actor_M = await fromUuid(lastArg.actorUuid);
-    let effect_M = actor_M.effects.find(e => e.label == lastArg.efData.name);
-    effect_M.delete();
-  } else {
-    const item = await fromUuid(lastArg.efData.origin);
-    const target = canvas.tokens.get(lastArg.tokenId);
-    await rollItemDamage(target, item, args[1]);
-  }
+  const item = await fromUuid(lastArg.efData.origin);
+  const target = canvas.tokens.get(lastArg.tokenId);
+  await rollItemDamage(target, item, args[1]);
 }

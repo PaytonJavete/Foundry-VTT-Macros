@@ -1,7 +1,7 @@
-const version = "10.0.13"
+const version = "10.0.33"
 try {
     if (!["mwak","rwak"].includes(args[0].itemData.system.actionType)) return {}; // weapon attack
-    if (args[0].itemData.system.actionType === "mwak" && !args[0].itemData.system.properties?.fin && args[0].itemData.system?.ability != "dex") 
+    if (args[0].itemData.system.actionType === "mwak" && !args[0].itemData.system.properties?.fin) 
       return {}; // ranged or finesse
     if (args[0].hitTargets.length < 1) return {};
     token = canvas.tokens.get(args[0].tokenId);
@@ -45,7 +45,7 @@ try {
       MidiQOL.warn("Sneak Attack Damage: No advantage/ally next to target");
       return {};
     }
-    let useSneak = getProperty(actor.data, "flags.dae.autoSneak");
+    let useSneak = getProperty(actor, "flags.dae.autoSneak");
     if (!useSneak) {
         let dialog = new Promise((resolve, reject) => {
           new Dialog({
@@ -70,7 +70,6 @@ try {
         useSneak = await dialog;
     }
     if (!useSneak) return {}
-    const diceMult = args[0].isCritical ? 2: 1;
     const baseDice = Math.ceil(rogueLevels/2);
     if (game.combat) {
       const combatTime = `${game.combat.id}-${game.combat.round + game.combat.turn /100}`;
@@ -79,8 +78,18 @@ try {
          await actor.setFlag("midi-qol", "sneakAttackTime", combatTime)
       }
     }
+    const damageFormula = new CONFIG.Dice.DamageRoll(`${baseDice}d6`, {}, {
+        critical: args[0].isCritical ?? false, 
+        powerfulCritical: game.settings.get("dnd5e", "criticalDamageMaxDice"),
+        multiplyNumeric: game.settings.get("dnd5e",  "criticalDamageModifiers")
+    }).formula
+    new Sequence()
+        .effect()
+          .file("jb2a.sneak_attack.dark_red")
+          .atLocation(target)
+        .play()
     // How to check that we've already done one this turn?
-    return {damageRoll: `${baseDice * diceMult}d6`, flavor: "Sneak Attack"};
+    return {damageRoll: damageFormula, flavor: "Sneak Attack"};
 } catch (err) {
     console.error(`${args[0].itemData.name} - Sneak Attack ${version}`, err);
 }

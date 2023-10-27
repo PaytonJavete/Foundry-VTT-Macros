@@ -22,7 +22,7 @@ if(!concentrating){
 
                         const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: actor });
                         const options = { showFullCard: false, createWorkflow: true, configureDialog: true };
-                        const result = await MidiQOL.completeItemRoll(spellItem, options);
+                        const result = await MidiQOL.completeItemRoll(spellItem, {}, options);
                   },
               },
               no: {
@@ -43,7 +43,6 @@ if(!concentrating){
     const damageDie = await DAE.getFlag(actor, "CallLightning");
     const workflowItemData = duplicate(item);
     workflowItemData.name = "Call Lightning Bolt";
-    workflowItemData.label = "Call Lightning Bolt";
     workflowItemData.system.components.concentration = false;
     workflowItemData.system.preparation.mode = "atwill";
     workflowItemData.system.uses = {max: null, per: "", value: null};

@@ -1,6 +1,6 @@
 let concentrating = actor.effects.some(effect => effect.sourceName == "Storm Sphere" && effect.label == "Concentrating");
 if(!concentrating){
-    game.dnd5e.macros.rollItem("Storm Sphere")    
+    dnd5e.documents.macro.rollItem("Storm Sphere");
 } else {
 	if (game.user.targets.size != 1){
     	return ui.notifications.warn("Storm Sphere Bolt must target one creature.");
@@ -35,6 +35,7 @@ if(!concentrating){
     workflowItemData.system.range = {long: null, units: "", value: null};
     workflowItemData.system.target = {type: "creature", units: "", value: 1, width: null};
     workflowItemData.system.actionType = "rsak";
+    workflowItemData.system.attackBonus = actor.system.attributes.prof; //for some reason does not add prof
     workflowItemData.system.activation = {type: 'bonus', cost: 1, condition: ''};
     workflowItemData.system.save = {ability: '', dc: null, scaling: 'spell'};
     workflowItemData.system.duration = {value: null, units: ''};
@@ -48,7 +49,7 @@ if(!concentrating){
 
     const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: canvas.tokens.controlled[0].actor });
     const options = { showFullCard: false, createWorkflow: true, configureDialog: true};
-    const result = await MidiQOL.completeItemRoll(spellItem, options);
+    const result = await MidiQOL.completeItemRoll(spellItem, {}, options);
 
     playStormBolt(template, target, result.hitTargets.size == 0);
 }

@@ -90,6 +90,10 @@ actor.update(objUpdate);
 
 const workflowItemData = duplicate(item);
 
+if(['rsak', 'msak'].includes(workflowItemData.system.actionType)){
+    workflowItemData.system.attackBonus = actor.system.attributes.prof; //CONFIG.Item.documentClass for some reason does not add prof
+}
+
 if (workflowItemData.system.damage.parts.length > 0){
 	bonusDamage = hitDiceSpent * actor.system.abilities.con.mod;
 	workflowItemData.system.damage.parts[0][0] += ` + ${bonusDamage}`;
