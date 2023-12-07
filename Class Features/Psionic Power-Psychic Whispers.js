@@ -1,8 +1,8 @@
 const lastArg = args[args.length - 1];
 
-let duration = 3600 * lastArg.damageTotal;
+duration = 3600 * lastArg.damageTotal;
 
-lastArg.targetUuids.forEach(async (uuid) => {
-	let tokenM = await fromUuid(uuid);
-	let effectM = tokenM.actor.effects.find(e => e.name == "Psychic Whispers").update({duration: {seconds: duration}})
-});
+effectData = game.dfreds.effectInterface.findEffectByName('Psychic Whispers').data;
+effectData.duration.seconds = duration;
+
+lastArg.targetUuids.forEach(uuid => game.dfreds.effectInterface.addEffectWith({ effectData, uuid }));

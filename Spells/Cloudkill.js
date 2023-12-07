@@ -46,7 +46,18 @@ async function attachSequencerFileToTemplate(template, originUuid) {
 if (args[0].tag === "OnUse" && args[0].macroPass === "preActiveEffects") {
   const template = await fromUuid(lastArg.templateUuid);
   attachSequencerFileToTemplate(template, lastArg.itemUuid);
-  await template.update({"flags":{"perfect-vision":{"visionLimitation":{enabled: true, sight:0}}}});
+  let templateD = canvas.templates.placeables.find((w) => w.document.flags.dnd5e.origin == lastArg.itemUuid);
+  let HO_flags = {
+        limits: {
+          sight: {
+            basicSight: { enabled: true, range: 0 }, // Darkvision
+            lightPerception: { enabled: true, range: 0 }, // Light Perception
+          },
+          light: { enabled: true, range: 0 },
+        },
+      };
+
+  templateD.document.update({flags: HO_flags});
   
   return await AAhelpers.applyTemplate(args);
 
