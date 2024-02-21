@@ -33,7 +33,7 @@ for (let i = 2; i <= rays; i++){
     const item = actorM.items.getName("Scorching Ray");
     const workflowItemData = duplicate(item);
     workflowItemData.system.preparation.mode = "atwill";
-    workflowItemData.system.attackBonus = actor.system.attributes.prof; //CONFIG.Item.documentClass for some reason does not add prof
+    workflowItemData.system.attackBonus = Number(workflowItemData.system.attackBonus) + Number(actor.system.attributes.prof); //CONFIG.Item.documentClass for some reason does not add prof
     setProperty(workflowItemData, "flags.itemacro", {});
     setProperty(workflowItemData, "flags.midi-qol", {});
     setProperty(workflowItemData, "flags.dae", {});

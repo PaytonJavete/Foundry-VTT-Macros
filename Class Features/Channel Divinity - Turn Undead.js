@@ -5,7 +5,7 @@ if (args[0].macroPass === "preambleComplete"){
 	let undeadTargets = lastArg.targets.filter(target => target.actor.system.details.type.value == "undead" &&  !target.actor.effects.find(effect => effect.label.includes("Turn Immunity")));
 	for (target of undeadTargets){
 		actor = target.actor;
-		if (actor.effects.find(effect => effect.label.includes("Turn Resistance"))){
+		if (actor.effects.find(effect => effect.label.includes("Turn Resistance") || effect.label.includes("Marshal Undead"))){
 			uuid = actor.uuid;
 			await game.dfreds.effectInterface.addEffect({ effectName: 'TR Helper', uuid });
 		}

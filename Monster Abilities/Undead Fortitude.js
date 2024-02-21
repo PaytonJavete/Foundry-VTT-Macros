@@ -24,6 +24,9 @@ if (args[0] == "off" && lastArg["expiry-reason"] == 'midi-qol:zeroHP') {
 	if (actor.name == "Frost Giant Zombie"){
 		damageTypes.push("fire")
 	}
+	if (actor.name == "Skeletal Knight"){
+		damageTypes = ["bludgeoning"];
+	}
 	let procs = true;
 	for (damageObj of workflow.damageDetail){
 		if (damageTypes.includes(damageObj.type)) procs = false;

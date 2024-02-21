@@ -10,22 +10,24 @@ if (args[0] == "off" && lastArg["expiry-reason"] == "midi-qol:isAttacked") {
 
 	messages = Array.from(game.messages);
 	let workflowId = null;
+	let messageId = 0;
 	for (var i = messages.length - 1; i >= 0; i--) {
 		content = messages[i].data.content;
 	    if (content.includes(`<div class="midi-qol-attack-roll">`) && content.includes(`${lastArg.tokenId}`)){
 	    	workflowId = messages[i].data.flags["midi-qol"].workflowId;
+	    	messageId = messages[i].uuid;
 	    	break;
 	    }
 	}
 
 	const workflow = await MidiQOL.Workflow.getWorkflow(workflowId);
 	//use a flag to ignore duplicate instances of proccing the mirror image
-	if(workflow.id == DAE.getFlag(actor, "MirrorImage")){
+	if(messageId == DAE.getFlag(actor, "MirrorImage")){
 		await actor.createEmbeddedDocuments('ActiveEffect', [effectData]);
 		actor.effects.find(effect => effect.label.includes("Mirror Image Tracker")).update({duration: getDuration});
 		return;
 	} else {
-		DAE.setFlag(actor, "MirrorImage", workflow.id);
+		DAE.setFlag(actor, "MirrorImage", messageId);
 	}
 
 	//check to see if it has blinsight, tremorsense, or truesight
@@ -61,7 +63,7 @@ if (args[0] == "off" && lastArg["expiry-reason"] == "midi-qol:isAttacked") {
 					results_html += "An image has been destroyed.";
 					numImages -= 1;
 					effectData.changes[0].value = `${numImages}`;
-					effectData.label = `Mirror Image Tracker (${numImages})`;
+					effectData.name = `Mirror Image Tracker (${numImages})`;
 				}
 			} else {
 				results_html += "An image was the target, but dodged the attack.";

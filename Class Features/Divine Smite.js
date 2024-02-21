@@ -23,109 +23,80 @@ token = canvas.tokens.get(args[0].tokenId);
 s_actor = token.actor;    
 
 // Flag for selected slot type
-let pactSlot = false;
 let slotLevel = 0;
 let consumeSlot = true;
-let knockProne = true;
 
 // Verifies if the actor can smite.
 if (s_actor?.items.find(i => i.name === "Divine Smite") === undefined){
     return ui.notifications.error(`No valid actor selected that can use this macro.`);
 }
 
-let confirmed = false;
-if (hasAvailableSlot(s_actor)) {
+// Check is slots available
+if (!hasAvailableSlot(s_actor)) return ui.notifications.error(`No spell slots available to use this feature.`);
 
-    // Get options for available slots
-    let optionsText = "";
-    let i = 1;
-    for (; i < maxSpellSlot; i++) {
-        const slots = getSpellSlots(s_actor, i, false);
-        if (slots.value > 0) {
-            const level = CONFIG.DND5E.spellLevels[i];
-            const label = game.i18n.format('DND5E.SpellLevelSlot', {level: level, n: slots.value});
-            optionsText += `<option value="${i}">${label}</option>`;
-        }
-    }
-
-    // Check for Pact slot
-    const slots = getSpellSlots(s_actor, 0, true);
-    if(slots.value > 0) {
-        i++;
-        const level = CONFIG.DND5E.spellLevels[slots.level];
-        const label = 'Pact: ' + game.i18n.format('DND5E.SpellLevelSlot', {level: level, n: slots.value});
+// Get options for available slots
+let optionsText = "";
+let i = 1;
+for (; i < maxSpellSlot; i++) {
+    const slots = s_actor.system.spells[`spell${i}`];
+    if (slots.value > 0) {
+        const level = CONFIG.DND5E.spellLevels[i];
+        const label = game.i18n.format('DND5E.SpellLevelSlot', {level: level, n: slots.value});
         optionsText += `<option value="${i}">${label}</option>`;
     }
+}
 
-    // Create a dialogue box to select spell slot level to use when smiting.
-    let dialog = new Promise((resolve, reject) => { 
-        new Dialog({
-        title: "Divine Smite: Usage Configuration",
-        content: `
-        <form id="smite-use-form">
-            <p>` + game.i18n.format("DND5E.AbilityUseHint", {name: "Divine Smite", type: "feature"}) + `</p>
-            <div class="form-group">
-                <label>Spell Slot Level</label>
-                <div class="form-fields">
-                    <select name="slot-level">` + optionsText + `</select>
-                </div>
+// Create a dialogue box to select spell slot level to use when smiting.
+let confirmed = false;
+let dialog = new Promise(async (resolve, reject) => {
+    new Dialog({
+    title: "Divine Smite: Usage Configuration",
+    content: `
+    <form id="smite-use-form">
+        <p>` + game.i18n.format("DND5E.AbilityUseHint", {name: "Divine Smite", type: "feature"}) + `</p>
+        <div class="form-group">
+            <label>Spell Slot Level</label>
+            <div class="form-fields">
+                <select name="slot-level">` + optionsText + `</select>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label class="checkbox">
-                <input type="checkbox" name="consumeCheckbox" checked/>` + game.i18n.localize("DND5E.SpellCastConsume") + `</label>
-            </div>
-
-            <div class="form-group">
-                <label class="checkbox">
-                <input type="checkbox" name="knockProne" checked/>Knock Prone?</label>
-            </div>
-        </form>
-        `,
-        buttons: {
-            one: {
-                icon: '<i class="fas fa-check"></i>',
-                label: "SMITE!",
-                callback: () => resolve(true)
-            },
-            two: {
-                icon: '<i class="fas fa-times"></i>',
-                label: "Cancel",
-                callback: () => {resolve(false)}
-            }
+        <div class="form-group">
+            <label class="checkbox">
+            <input type="checkbox" name="consumeCheckbox" checked/>` + game.i18n.localize("DND5E.SpellCastConsume") + `</label>
+        </div>
+    </form>
+    `,
+    buttons: {
+        one: {
+            icon: '<i class="fas fa-check"></i>',
+            label: "SMITE!",
+            callback: () => resolve(true)
         },
-        default: "Cancel",
-        close: html => {
-            slotLevel = parseInt(html.find('[name=slot-level]')[0].value);
-            if(slotLevel > maxSpellSlot) {
-                slotLevel = actor.system.spells.pact.level;
-                pactSlot = true;
-            }       
-            consumeSlot = html.find('[name=consumeCheckbox]')[0].checked;
-            knockProne = html.find('[name=knockProne]')[0].checked;
+        two: {
+            icon: '<i class="fas fa-times"></i>',
+            label: "Cancel",
+            callback: () => {resolve(false)}
         }
-      }).render(true);
-    });
-    confirmed = await dialog;
-} else {
-    return ui.notifications.error(`No spell slots available to use this feature.`);    
-}
+    },
+    default: "Cancel",
+    close: html => {
+        slotLevel = parseInt(html.find('[name=slot-level]')[0].value);   
+        consumeSlot = html.find('[name=consumeCheckbox]')[0].checked;
+    }
+  }).render(true);
+});
+confirmed = await dialog;
 
-if(!confirmed){
-    return;
-}
+if(!confirmed) return{};
 
 const damageMult = args[0].isCritical ? 2: 1;
 let targets = game.user.targets;
 
-let chosenSpellSlots = getSpellSlots(actor, slotLevel, pactSlot);
+let chosenSpellSlots = s_actor.system.spells[`spell${slotLevel}`];
 
 if (chosenSpellSlots.value < 1) {
     ui.notifications.error("No spell slots of the required level available.");
-    return;
-}
-if (targets.size !== 1) {
-    ui.notifications.error("You must target exactly one token to Smite.");
     return;
 }
 
@@ -134,36 +105,9 @@ let numDice = (slotLevel + 1) * damageMult;
 let type = target.actor.system.details.type.value?.toLocaleLowerCase();
 if (affectedCreatureTypes.includes(type)) numDice += 1;
 
-
-let targetUuid = target.actor.uuid;
-console.log(targetUuid);
-if (knockProne){
-    if (affectedCreatureTypes.includes(type) && type != "fiend" && target.actor.items.getName("Turn Resistance") == undefined && target.actor.items.getName("Turn Immunity") == undefined){
-        const hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Prone', targetUuid);
-        if (!hasEffectApplied) {
-          game.dfreds.effectInterface.addEffect({ effectName: 'Prone', uuid: targetUuid });
-        }
-    } else {
-        let save_roll = await target.actor.rollAbilitySave("str", {chatMessage : true, async: true });
-        let spellDC = s_actor.system.attributes.spelldc;
-        if (save_roll.total < spellDC){
-            const hasEffectApplied = await game.dfreds.effectInterface.hasEffectApplied('Prone', targetUuid);
-            if (!hasEffectApplied) {
-              game.dfreds.effectInterface.addEffect({ effectName: 'Prone', uuid: targetUuid });
-            }
-        }
-    }
-}
-
 if (consumeSlot){
     let objUpdate = new Object();
-    if(pactSlot == false) {
-        objUpdate['system.spells.spell' + slotLevel + '.value'] = chosenSpellSlots.value - 1;
-    }
-    else {
-        objUpdate['system.spells.pact.value'] = chosenSpellSlots.value - 1;
-    }
-    
+    objUpdate['system.spells.spell' + slotLevel + '.value'] = chosenSpellSlots.value - 1;
     s_actor.update(objUpdate);
 }
 
@@ -179,22 +123,6 @@ new Sequence()
       .play();
 
 return {damageRoll: `${numDice}d8[radiant]`, flavor: "Divine smite"};
-
-/**
- * Gives the spell slot information for a particular actor and spell slot level.
- * @param {Actor5e} actor - the actor to get slot information from.
- * @param {integer} level - the spell slot level to get information about. level 0 is deprecated.
- * @param {boolean} isPact - whether the spell slot is obtained through pact.
- * @returns {object} contains value (number of slots remaining), max, and override.
- */
-function getSpellSlots(actor, level, isPact) {
-    if(isPact == false) {
-        return actor.system.spells[`spell${level}`];
-    }
-    else {
-        return actor.system.spells.pact;
-    }
-}
 
 /**
  * Returns whether the actor has any spell slot left.
