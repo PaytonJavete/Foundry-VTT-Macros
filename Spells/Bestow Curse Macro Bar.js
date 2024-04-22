@@ -80,7 +80,7 @@ if (level == 4){
     workflowItemData.system.components.concentration = false;
 }
 
-const effectData = workflowItemData.effects.find(effect => effect.label == "Bestow Curse");
+const effectData = workflowItemData.effects.find(effect => effect.name == "Bestow Curse");
 if (effect == "Ability"){
     let ability = "";
     let abilityOptionsText = "<option value='str'>Strength</option>";

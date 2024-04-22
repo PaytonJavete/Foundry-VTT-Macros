@@ -1,7 +1,7 @@
 const version = "10.0.33"
 try {
     if (!["mwak","rwak"].includes(args[0].itemData.system.actionType)) return {}; // weapon attack
-    if (args[0].itemData.system.actionType === "mwak" && !args[0].itemData.system.properties?.fin) 
+    if (args[0].itemData.system.actionType === "mwak" && !args[0].itemData.system.properties?.fin && !args[0].itemData.name.includes("Psychic Blades")) 
       return {}; // ranged or finesse
     if (args[0].hitTargets.length < 1) return {};
     token = canvas.tokens.get(args[0].tokenId);

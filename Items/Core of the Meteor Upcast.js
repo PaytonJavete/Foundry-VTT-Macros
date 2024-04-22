@@ -3,7 +3,7 @@
 let s_actor = canvas.tokens.controlled[0].actor;
 let spellLevel = 0;
 let upcastLevel = 0;
-const item = actor.items.getName("Core of the Meteor");
+const item = actor.items.getName("Core of the Meteor (Awakened)");
 let value = item.system.uses.value;
 let max = item.system.uses.max;
 
@@ -63,7 +63,6 @@ confirmed = await dialog;
 
 if (confirmed){
 	// Check and subtract charges from Core of the Meteor
-    const item = actor.items.getName("Core of the Meteor");
 	let updateValue = value - (upcastLevel - spellLevel);
 	if (updateValue < 0){
 		ui.notifications.error("Not enough charges available.");

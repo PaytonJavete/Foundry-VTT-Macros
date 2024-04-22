@@ -6,6 +6,6 @@
 //##############################################################################################################################
 if (args[0] === "off"){
 	const userId = game.userId;
-	let token_S = canvas.tokens.placeables.filter(t => t.actor.flags?.warpgate?.control.user == userId && t.document.name == "NAME")[0];
+	let token_S = canvas.tokens.placeables.find(t => t.actor.flags?.warpgate?.control.user == userId && t.document.name.includes("NAME"));
 	if (token_S)token_S.document.delete();
 }
