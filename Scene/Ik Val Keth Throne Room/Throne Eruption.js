@@ -24,6 +24,9 @@ let sequence = new Sequence()
         .persist()
 sequence.play();
 canvas.lighting.placeables.find(l => l.document.flags?.tagger?.tags[0] == "transition").document.update({"hidden": false});
+let lights = canvas.lighting.placeables.filter(l => l.document.flags?.tagger?.tags[0] == "Torch");
+for (l of lights) l.document.update({"hidden": true});
+
 
 await wait(500);
 

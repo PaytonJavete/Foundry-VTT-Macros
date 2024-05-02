@@ -83,12 +83,13 @@ let dialog = new Promise(async (resolve, reject) => {
     close: html => {
         slotLevel = parseInt(html.find('[name=slot-level]')[0].value);   
         consumeSlot = html.find('[name=consumeCheckbox]')[0].checked;
+        resolve();
     }
   }).render(true);
 });
 confirmed = await dialog;
 
-if(!confirmed) return{};
+if(!confirmed) return;
 
 const damageMult = args[0].isCritical ? 2: 1;
 let targets = game.user.targets;

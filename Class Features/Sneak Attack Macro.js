@@ -64,7 +64,10 @@ try {
                   callback: () => {resolve(false)}
               }
           },
-          default: "two"
+          default: "two",
+          close: html => {
+              resolve();
+          }
           }).render(true);
         });
         useSneak = await dialog;

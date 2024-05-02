@@ -3,6 +3,9 @@ if (canvasDrawings.length == 2){
   const drawingArray = canvasDrawings.map((d) => d.id);
   await canvas.scene.deleteEmbeddedDocuments("Drawing", drawingArray);
   AAhelpers.UserCollateAuras(canvas.scene.id, true, false, "refresh");
+
+  let lights = canvas.lighting.placeables.filter(l => l.document.flags?.tagger?.tags[0] == "Statue");
+  for (l of lights) l.document.update({"hidden": true});
 } else {
   let shapeD = {
           type: "p",
@@ -51,6 +54,9 @@ if (canvasDrawings.length == 2){
   const doR = new CONFIG.Drawing.documentClass(drawingRight, { parent: canvas.scene });
   drawings.push(doR);
   await canvas.scene.createEmbeddedDocuments("Drawing", drawings);
+
+  let lights = canvas.lighting.placeables.filter(l => l.document.flags?.tagger?.tags[0] == "Statue");
+  for (l of lights) l.document.update({"hidden": false});
 
   //add effect
   const effectData = game.dfreds.effectInterface.findEffectByName('Silenced').data;
