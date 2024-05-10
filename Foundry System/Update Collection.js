@@ -11,6 +11,21 @@ game.collections.get(collectionName).getName(item).update(changes);
 //Update targetFolder example
 game.collections.get("Item").getName("Aid").update({targetFolder: game.collections.get("Folder").getName("9th Level")})
 
+//Push spell to actors
+const spellName = "Sanctuary";
+const actors = game.actors.filter(a => a.items.some(i => i.name == spellName));
+console.log(actors);
+
+for (actor of actors){
+  console.log(actor);
+  currentItem = actor.items.find(i => i.name == spellName);
+  newItem = duplicate(game.items.find(i => i.name == spellName));
+  newItem.system.uses = currentItem.system.uses;
+  newItem.system.preparation = currentItem.system.preparation;
+  newItem.system.consume = currentItem.system.consume;
+  await actor.deleteEmbeddedDocuments("Item", [currentItem.id]);
+  await actor.createEmbeddedDocuments("Item", [newItem]); 
+}
 
 //Update Spells
 const spells = game.collections.get("Item").filter(i => i.type === "spell");
