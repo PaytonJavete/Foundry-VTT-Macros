@@ -1,9 +1,6 @@
 async function wait(ms) { return new Promise(resolve => { setTimeout(resolve, ms); }); }
 lastArg = args[args.length-1];
 let isCaster = lastArg.origin.includes(lastArg.actorUuid);
-const item = await fromUuid(lastArg.efData.origin);
-const caster = item.parent;
-const [casterToken] = canvas.tokens.objects.children.filter(t => t.document.actorId == caster.id);
 
 if(isCaster){
 	let size = canvas.grid.size * ((50*2.1) / canvas.dimensions.distance);
@@ -35,6 +32,8 @@ if(isCaster){
 	}
 } else {
 	let token = canvas.tokens.get(lastArg.tokenId);
+	const caster = await fromUuid(lastArg.origin);
+	const casterToken = canvas.tokens.placeables.find(t => t.actor.uuid == lastArg.origin)
 	const cieling = canvas.scene.foregroundElevation;
 	const casterElev = casterToken.document.elevation;
 	const tokenElev = token.document.elevation;
@@ -47,7 +46,7 @@ if(isCaster){
 		//check if cieling is above height of spell
 		if (casterElev+50 < cieling) distCieling = null;
 
-		//make dex save, on failure take damage (is cieling is at or below spell range) and change elevation
+		//make dex save, on failure take damage (if cieling is at or below spell range) and change elevation
 		let DC = caster.system.attributes.spelldc;
 		let save = await token.actor.rollAbilitySave('dex', {flavor: `Reverse Gravity: Dexterity save vs DC${DC}`});
 		if (save.total >= DC) return;
@@ -69,7 +68,7 @@ if(isCaster){
 		await DAE.setFlag(token.actor, "ReverseGravityHeight", tokenElev);
 	} else if (args[0] === "off"){
 		//simple check to see if target can climb on walls/cielings
-		if (token.actor.effects.find(e => e.label.includes("Spider Climb")) && tokenElev == cieling) return;
+		if (token.actor.effects.find(e => e.name.includes("Spider Climb")) && tokenElev == cieling) return;
 
 		//check distance of target to floor
 		const previousElevation = DAE.getFlag(token.actor, "ReverseGravityHeight");

@@ -58,6 +58,13 @@ if (!cast) return;
 
 newValue = wand.system.uses.value - (level-2);
 wand.update({"system.uses.value": newValue})
+if (newValue == 0){
+    ChatMessage.create({
+        user: game.user._id,
+        speaker: ChatMessage.getSpeaker({token: actorD}),
+        content: "Roll a d20, on a 1 the Wand of Magic Missiles breaks"
+    });
+}
 
 if (lastArg.targets.length === 1) {
     let target = canvas.tokens.get(lastArg.targets[0].id);
@@ -94,8 +101,8 @@ if (lastArg.targets.length === 1) {
                             errorMessage = `The spell fails, No bolts spent.`;
                             return ui.notifications.error(errorMessage);
                         }
-                        damageRoll = new Roll(`1d4[force]+1`).evaluate({ async: false });
-                        game.dice3d?.showForRoll(damageRoll);
+                        damageRoll = await new Roll(`1d4[force]+1`).evaluate();
+                        if (game.dice3d) game.dice3d.showForRoll(damageRoll);
                         for (let selected_target of selected_targets) {
                             let damageNum = selected_target.value;
                             if (damageNum != null) {
@@ -103,9 +110,9 @@ if (lastArg.targets.length === 1) {
                                 let get_target = canvas.tokens.get(target_id);
                                 console.log(damageNum);
                                 await anime(tokenD, get_target, Number(damageNum));
-                                totalDamage = await new Roll(`${damageNum} * ${damageRoll.total}`).evaluate({ async: true });
-                                await MidiQOL.applyTokenDamage([{ damage: totalDamage.total, type: damageType }], totalDamage.total, new Set([get_target]), itemUuid, new Set());
-                                damage_target.push(`<div class="midi-qol-flex-container"><div>hits</div><div class="midi-qol-target-npc midi-qol-target-name" id="${get_target.id}"> ${get_target.name} [x${damageNum}|<b>${totalDamage.total}</b>]</div><div><img src="${get_target.document.texture.src}" width="30" height="30" style="border:0px"></div></div>`);
+                                totalDamage = damageNum * damageRoll.total;
+                                await MidiQOL.applyTokenDamage([{ damage: totalDamage, type: damageType }], totalDamage, new Set([get_target]), itemUuid, new Set());
+                                damage_target.push(`<div class="midi-qol-flex-container"><div>hits</div><div class="midi-qol-target-npc midi-qol-target-name" id="${get_target.id}"> ${get_target.name} [x${damageNum}|<b>${totalDamage}</b>]</div><div><img src="${get_target.document.texture.src}" width="30" height="30" style="border:0px"></div></div>`);
 
                             }
                         }

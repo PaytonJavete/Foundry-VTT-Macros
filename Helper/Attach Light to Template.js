@@ -1,7 +1,7 @@
 /* 
 Parameters passed:
   - template: {x: [x value of template], y: [y value of template], uuid: [template uuid]}
-  - light_P: {dim: [int], bright: [int], color: [color hex]}};
+  - light_P: {dim: [int], bright: [int], color: [color hex], darkness: [bool]}};
  */
 
 light = await createLight(light_P, template.x, template.y);
@@ -11,7 +11,7 @@ let deleteHook = Hooks.on("preDeleteMeasuredTemplate", (template) => templateDel
 
 async function templateUpdated(templateDocument){
     if(templateDocument.uuid !== template.uuid) return;
-    await light.update({x: templateDocument.data.x, y: templateDocument.data.y});
+    await light.update({x: templateDocument.x, y: templateDocument.y});
 }
 
 async function templateDeleted(templateDocument){
@@ -30,12 +30,13 @@ async function createLight(args, cx, cy){
     vision: false,
     config: {
       alpha: 0.5,
-      angle: 0,
+      angle: 360,
       bright: args.bright,
       coloration: 1,
       dim: args.dim,
       gradual: false,
       luminosity: 0.5,
+      negative: args?.darkness,
       saturation: 0,
       contrast: 0,
       shadows: 0,

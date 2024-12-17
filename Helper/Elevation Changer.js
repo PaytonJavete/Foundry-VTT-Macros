@@ -26,6 +26,7 @@ let dialog = new Promise((resolve, reject) => {
     default: "Cancel",
     close: html => {
         height = parseInt(html.find('[name=elevate]')[0].value);
+        resolve();
     }
   }).render(true);
 });

@@ -18,7 +18,7 @@ function dancingLight(cx, cy, color) {
     vision: false,
     config: {
       alpha: 0.2,
-      angle: 0,
+      angle: 360,
       bright: 0,
       coloration: 1,
       dim: 10,
@@ -51,7 +51,7 @@ if (state === "on") {
 }
 
 if (state === "off") {
-  const dancingLights = canvas.lighting.placeables.filter((w) => w.data.flags?.spellEffects?.DancingLights?.ActorId === dlSpellParams.targetActorId);
+  const dancingLights = canvas.lighting.placeables.filter((w) => w.document.flags?.spellEffects?.DancingLights?.ActorId === dlSpellParams.targetActorId);
   const lightArray = dancingLights.map((w) => w.id);
   await canvas.scene.deleteEmbeddedDocuments("AmbientLight", lightArray);
 }

@@ -226,7 +226,6 @@ if (args[0] === "on"){
         default: "Done",
         close: html => {
           color = html.find('[name=color]')[0].value;
-          console.log(color);
         }
       }).render(true);
     });  
@@ -236,8 +235,8 @@ if (args[0] === "on"){
     }
     Hooks.once("createMeasuredTemplate", async (template) => {
       const dlSpellParams = {
-        x: template.data.x,
-        y: template.data.y,
+        x: template.x,
+        y: template.y,
         lightColor: color,
         targetActorId: targetActor.id,
       };
@@ -279,7 +278,6 @@ if (args[0] === "on"){
           default: "Done",
           close: html => {
             color = html.find('[name=color]')[0].value;
-            console.log(color);
           }
         }).render(true);
       });  
@@ -289,8 +287,8 @@ if (args[0] === "on"){
       }
       Hooks.once("createMeasuredTemplate", async (template) => {
         const dlSpellParams = {
-          x: template.data.x,
-          y: template.data.y,
+          x: template.x,
+          y: template.y,
           lightColor: color,
           targetActorId: targetActor.id,
         };

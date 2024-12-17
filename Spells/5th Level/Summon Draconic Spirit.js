@@ -1,10 +1,15 @@
+const lastArg = args[args.length-1];
+let tactor = canvas.tokens.get(lastArg.tokenId).actor;
+let effect =  tactor.effects.find(e => e.name === "Summon Draconic Spirit");
+let changes = foundry.utils.duplicate(effect.changes);
 let type = null;
 let confirmed = false;
 
 let dialog = new Promise((resolve, reject) => {
     new Dialog({
-        title: 'Choose a Damage Type for SDS Breath Weapon',
+        title: 'Summon Draconic Spirit',
         content: `
+        <p>WAIT until after summoning Draconic Spirit. Type chosen will determine your damage resistance and spirit breath weapon.</p>
           <form class="flexcol">
             <div class="form-group">
               <select id="type">
@@ -37,11 +42,5 @@ let dialog = new Promise((resolve, reject) => {
 confirmed = await dialog;
 if (!confirmed) return;
 
-const actor = canvas.tokens.controlled[0].actor;
-const item = actor.items.getName("SDS Breath Weapon");
-const workflowItemData = foundry.utils.duplicate(item);
-workflowItemData.system.damage.parts[0][1] = type;
-
-const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: actor });
-const options = { showFullCard: false, createWorkflow: true, configureDialog: true };
-await MidiQOL.completeItemUse(spellItem, options);
+changes[0].value = type;
+await effect.update({changes});

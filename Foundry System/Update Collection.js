@@ -27,10 +27,8 @@ for (actor of actors){
   await actor.createEmbeddedDocuments("Item", [newItem]); 
 }
 
-//Update Spells
+//Update Folders for Spells
 const spells = game.collections.get("Item").filter(i => i.type === "spell");
-
-//Update Folders
 for (const spell of spells){
   level = spell.system.level;
   let targetFolder = undefined;
@@ -97,4 +95,42 @@ for (t of targetFolders){
   hexStr = '#' + redStr + greenStr + blueStr;
   t.folder.update({color: hexStr});
   step += 1;
+}
+
+//Update Folders for Class Features
+const classFs = game.collections.get("Item").filter(i => i.type === "feat" && i.folder.name === "Class Features");
+const regex = /\s\d+/;
+for (const feat of classFs){
+  folderName = feat.system.requirements;
+  folderName = folderName.replace(regex, '');
+  let targetFolder = game.collections.get("Folder").getName(folderName);
+  if (!targetFolder){
+    console.log(feat);
+    console.log(folderName);
+  } else {
+    feat.update({folder: targetFolder});
+  }
+}
+
+//Update Folders for Subclasses
+const subClass = game.collections.get("Item").filter(i => i.type === "subclass");
+for (const subC of subClass){
+  folderName = subC.system.classIdentifier;
+  folderName = folderName.charAt(0).toUpperCase() + folderName.slice(1);
+  let targetFolder = game.collections.get("Folder").getName(folderName);
+  if (!targetFolder){
+    console.log(subC.name);
+    console.log(folderName);
+  } else {
+    subC.update({folder: targetFolder});
+  }
+}
+
+//Update Icons for Subclasses
+const subClass = game.collections.get("Item").filter(i => i.type === "subclass");
+for (const subC of subClass){
+  name = subC.system.classIdentifier;
+  name = name.charAt(0).toUpperCase() + name.slice(1);
+  iconName = `https://assets.forge-vtt.com/62771065dc9d0e273df623d2/Icons/${name}.jpeg`;
+  subC.update({img: iconName});
 }

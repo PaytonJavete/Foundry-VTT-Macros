@@ -32,7 +32,6 @@ for (let i = 2; i <= rays; i++){
 
     const item = actorM.items.getName("Scorching Ray (Circlet)");
     const workflowItemData = duplicate(item);
-    workflowItemData.system.attackBonus = 5; //CONFIG.Item.documentClass for some reason does not add prof
     workflowItemData.system.consume.type = "";
     workflowItemData.system.consume.target = "";
     setProperty(workflowItemData, "flags.itemacro", {});
@@ -40,6 +39,6 @@ for (let i = 2; i <= rays; i++){
     setProperty(workflowItemData, "flags.dae", {});
 
     const spellItem = new CONFIG.Item.documentClass(workflowItemData, { parent: actorM });
-    const options = { showFullCard: false, createWorkflow: true, configureDialog: true};
-    const result = await MidiQOL.completeItemRoll(spellItem, options);
+    const options = { showFullCard: false, createWorkflow: true, configureDialog: false};
+    const result = await MidiQOL.completeItemUse(spellItem, options);
 }

@@ -12,9 +12,9 @@
 const lastArg = args[args.length - 1];
 const sourceToken = await fromUuid(lastArg.tokenUuid);
 
-const userColor = game.user?.color ? "0x" + game.user.color.replace(/^#/, '') : 0x0D26FF;
+const userColor = game.user?.color ? "0x" + game.user.color.css.replace(/^#/, '') : 0x0D26FF;
 const range = RANGE;
-const tokenWidth = sourceToken.data.width;
+const tokenWidth = sourceToken.width;
 let startX = sourceToken.x;
 let startY = sourceToken.y;
 
@@ -61,19 +61,19 @@ async function deleteTemplatesAndMove() {
     let tokenCenter = canvas.grid.getCenter(startX, startY);
     let offset = (tokenWidth-1) * (canvas.grid.size / 2);
 
-    Sequencer.EffectManager.endEffects({ name: "teleportation" })
+    Sequencer.EffectManager.endEffects({ name: "teleportation - NAME" })
 
     let aaSeq = new Sequence();
 
     // Start Animation
     let startEffect = aaSeq.effect()
-    startEffect.file(START_EFFECT)
+    startEffect.file("START_EFFECT")
     startEffect.atLocation({x: tokenCenter[0]+offset, y: tokenCenter[1]+offset})    
     startEffect.size(tokenWidth * 1.5, { gridUnits: true })
 
     // End Animation
     let endEffect = aaSeq.effect()
-    endEffect.file(END_EFFECT)
+    endEffect.file("END_EFFECT")
     endEffect.atLocation({ x: centerPos[0]+offset, y: centerPos[1]+offset })
     endEffect.size(tokenWidth * 1.5, { gridUnits: true })
 
